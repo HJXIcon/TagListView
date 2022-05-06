@@ -56,7 +56,12 @@ open class TagView: UIButton {
             updateRightInsets()
         }
     }
-
+    @IBInspectable open var titleImageSpacing: CGFloat = 5 {
+        didSet {
+            titleEdgeInsets.left = paddingX + titleImageSpacing
+            imageEdgeInsets.left = -titleImageSpacing
+        }
+    }
     @IBInspectable open var tagBackgroundColor: UIColor = UIColor.gray {
         didSet {
             reloadStyles()
@@ -160,10 +165,10 @@ open class TagView: UIButton {
         setupView()
     }
     
-    public init(title: String) {
+    public init(title: String, image: UIImage? = nil) {
         super.init(frame: CGRect.zero)
         setTitle(title, for: UIControl.State())
-        
+        setImage(image, for: UIControl.State())
         setupView()
     }
     
@@ -188,6 +193,12 @@ open class TagView: UIButton {
         var size = titleLabel?.text?.size(withAttributes: [NSAttributedString.Key.font: textFont]) ?? CGSize.zero
         size.height = textFont.pointSize + paddingY * 2
         size.width += paddingX * 2
+        
+        if let imageSize = imageView?.image?.size {
+            size.width += imageSize.width + titleImageSpacing
+            size.height = max(imageSize.height, size.height)
+        }
+        
         if size.width < size.height {
             size.width = size.height
         }

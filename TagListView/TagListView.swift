@@ -111,6 +111,15 @@ open class TagListView: UIView {
             }
         }
     }
+    
+    @IBInspectable open dynamic var titleImageSpacing: CGFloat = 5 {
+        didSet {
+            defer { rearrangeViews() }
+            tagViews.forEach {
+                $0.titleImageSpacing = titleImageSpacing
+            }
+        }
+    }
     @IBInspectable open dynamic var marginY: CGFloat = 2 {
         didSet {
             rearrangeViews()
@@ -334,8 +343,9 @@ open class TagListView: UIView {
         return CGSize(width: frame.width, height: height)
     }
     
-    private func createNewTagView(_ title: String) -> TagView {
-        let tagView = TagView(title: title)
+    private func createNewTagView(title: String,
+                                  image: UIImage? = nil) -> TagView {
+        let tagView = TagView(title: title, image: image)
         
         tagView.textColor = textColor
         tagView.selectedTextColor = selectedTextColor
@@ -349,6 +359,9 @@ open class TagListView: UIView {
         tagView.selectedBorderColor = selectedBorderColor
         tagView.paddingX = paddingX
         tagView.paddingY = paddingY
+        if let _ = image {
+            tagView.titleImageSpacing = titleImageSpacing
+        }
         tagView.textFont = textFont
         tagView.removeIconLineWidth = removeIconLineWidth
         tagView.removeButtonIconSize = removeButtonIconSize
@@ -368,14 +381,14 @@ open class TagListView: UIView {
     }
 
     @discardableResult
-    open func addTag(_ title: String) -> TagView {
+    open func addTag(_ title: String, image: UIImage? = nil) -> TagView {
         defer { rearrangeViews() }
-        return addTagView(createNewTagView(title))
+        return addTagView(createNewTagView(title: title, image: image))
     }
     
     @discardableResult
     open func addTags(_ titles: [String]) -> [TagView] {
-        return addTagViews(titles.map(createNewTagView))
+        return addTagViews(titles.map({createNewTagView(title: $0, image: nil)}))
     }
     
     @discardableResult
@@ -398,8 +411,10 @@ open class TagListView: UIView {
     }
 
     @discardableResult
-    open func insertTag(_ title: String, at index: Int) -> TagView {
-        return insertTagView(createNewTagView(title), at: index)
+    open func insertTag(_ title: String,
+                        image: UIImage? = nil,
+                        at index: Int) -> TagView {
+        return insertTagView(createNewTagView(title: title, image: image), at: index)
     }
     
 
